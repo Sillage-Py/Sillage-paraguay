@@ -7,131 +7,148 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; background-color: #0a0a0a; color: #e5e5e5; }
+        body { font-family: 'Inter', sans-serif; background-color: #0a0a0a; color: #e5e5e5; scroll-behavior: smooth; }
         .font-serif { font-family: 'Playfair Display', serif; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        
-        /* Paleta Dorado y Negro */
         .gold-text { color: #d4af37; }
-        .gold-border { border-color: #d4af37; }
-        .gold-bg { background-color: #d4af37; }
         .glass-header { background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(15px); border-bottom: 1px solid #262626; }
         
-        /* Estilos de Tarjetas */
-        .card-premium { 
-            background: #171717; 
-            border: 1px solid #262626;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .selected-card { 
-            border-color: #d4af37 !important; 
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.1);
-        }
+        .card-premium { background: #171717; border: 1px solid #262626; transition: all 0.3s ease; position: relative; }
+        .selected-card { border-color: #d4af37 !important; background: #1a1a1a; }
         
-        /* Desplegable */
-        .details-content { max-height: 0; overflow: hidden; transition: all 0.4s ease; opacity: 0; }
-        .details-active { max-height: 500px; opacity: 1; padding-top: 1.5rem; padding-bottom: 1.5rem; }
-        
-        .size-btn { transition: all 0.2s ease; border: 1px solid #404040; background: transparent; color: #a3a3a3; }
-        .size-btn.active { background-color: #d4af37; color: #0a0a0a; border-color: #d4af37; font-weight: 700; }
+        /* Botón de opción */
+        .btn-option { 
+            border: 1px solid #333; 
+            background: #111; 
+            transition: all 0.2s ease; 
+            cursor: pointer;
+            width: 100%;
+            text-align: left;
+        }
+        .btn-option:hover { border-color: #555; }
+        .btn-option.active { 
+            border-color: #d4af37; 
+            background: rgba(212, 175, 55, 0.1); 
+        }
+
+        .badge-oferta {
+            position: absolute;
+            top: 15px;
+            right: -5px;
+            background: #d4af37;
+            color: #000;
+            padding: 4px 12px;
+            font-size: 10px;
+            font-weight: 900;
+            z-index: 10;
+            border-radius: 2px;
+        }
+
+        .details-content, .faq-content { max-height: 0; overflow: hidden; transition: all 0.4s ease; opacity: 0; }
+        .active-content { max-height: 500px; opacity: 1; padding-top: 1rem; }
         
         .btn-wa { background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); }
     </style>
 </head>
 <body class="pb-40">
 
-    <!-- HEADER CON LOGO -->
     <header class="glass-header sticky top-0 z-50">
-        <div class="max-w-4xl mx-auto px-6 py-6 flex flex-col items-center">
-            <!-- Espacio para tu Logo -->
-            <div class="mb-4">
-                <img src="URL_DE_TU_LOGO" alt="Sillage Logo" class="h-16 w-auto object-contain fallback-logo" onerror="this.style.display='none'; document.getElementById('text-logo').style.display='block'">
-                <div id="text-logo" style="display:none;" class="text-center">
-                    <h1 class="text-4xl font-serif font-bold tracking-tighter uppercase gold-text">SILLAGE</h1>
-                </div>
-            </div>
+        <div class="max-w-4xl mx-auto px-6 py-6 flex flex-col items-center text-center">
+            <h1 class="text-4xl font-serif font-bold gold-text uppercase">SILLAGE</h1>
+            <p class="text-[8px] tracking-[0.4em] text-stone-500 font-bold mb-6">LUXURY INSPIRATION · PARAGUAY</p>
             
-            <p class="text-[8px] uppercase tracking-[0.4em] text-stone-500 font-bold mb-6 italic">Paraguay · Luxury Inspiration</p>
-            
-            <div class="flex gap-3 overflow-x-auto no-scrollbar w-full justify-center">
-                <button onclick="filter('Todos')" id="filter-Todos" class="cat-btn px-6 py-2 rounded-full text-[9px] font-black tracking-widest bg-white text-black transition-all">TODOS</button>
-                <button onclick="filter('Damas')" id="filter-Damas" class="cat-btn px-6 py-2 rounded-full text-[9px] font-black tracking-widest border border-stone-800 text-stone-500 transition-all">DAMAS</button>
-                <button onclick="filter('Caballeros')" id="filter-Caballeros" class="cat-btn px-6 py-2 rounded-full text-[9px] font-black tracking-widest border border-stone-800 text-stone-500 transition-all">CABALLEROS</button>
+            <div class="flex gap-2">
+                <button onclick="filter('Todos')" id="filter-Todos" class="px-5 py-2 rounded-full text-[9px] font-black bg-white text-black transition-all">TODOS</button>
+                <button onclick="filter('Damas')" id="filter-Damas" class="px-5 py-2 rounded-full text-[9px] font-black border border-stone-800 text-stone-500 transition-all">DAMAS</button>
+                <button onclick="filter('Caballeros')" id="filter-Caballeros" class="px-5 py-2 rounded-full text-[9px] font-black border border-stone-800 text-stone-500 transition-all">CABALLEROS</button>
             </div>
         </div>
     </header>
 
-    <main id="catalog" class="max-w-4xl mx-auto px-4 py-10 grid grid-cols-1 gap-10">
-        <!-- Renderizado dinámico -->
+    <main id="catalog" class="max-w-4xl mx-auto px-4 py-8 space-y-8">
+        <!-- Render dinámico -->
     </main>
 
-    <!-- BARRA DE PEDIDO -->
-    <div id="cart-bar" class="fixed bottom-0 left-0 right-0 bg-[#111] border-t border-stone-800 p-6 shadow-[0_-20px_50px_rgba(0,0,0,0.5)] transform translate-y-full transition-all duration-500 z-[100] rounded-t-[2.5rem]">
-        <div class="max-w-4xl mx-auto flex items-center justify-between">
-            <div class="flex flex-col">
-                <span id="cart-count" class="text-[9px] font-black gold-text uppercase tracking-[0.2em] mb-1">0 Seleccionados</span>
-                <span id="cart-total" class="text-2xl font-serif font-bold text-white tracking-tighter font-serif">Gs. 0</span>
+    <!-- FAQ -->
+    <section class="max-w-4xl mx-auto px-6 py-10 mb-20 border-t border-stone-900">
+        <h2 class="text-xl font-serif font-bold gold-text mb-6 text-center uppercase tracking-widest">Preguntas Frecuentes</h2>
+        <div class="space-y-4">
+            <div class="border-b border-stone-800 pb-4">
+                <button onclick="toggleFaq(1)" class="w-full text-left font-bold text-sm uppercase tracking-wider flex justify-between">
+                    ¿Qué son las feromonas? <span id="faq-icon-1">+</span>
+                </button>
+                <div id="faq-1" class="faq-content text-stone-500 text-xs leading-relaxed">
+                    Son concentrados que potencian el atractivo natural. Se mezclan con el perfume sin alterar su aroma original.
+                </div>
             </div>
-            <button onclick="sendBulkWa()" class="btn-wa text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 shadow-lg hover:brightness-110 active:scale-95">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 1 1-7.6-14 8.38 8.38 0 0 1 3.8.9L21 3z"></path></svg>
-                Confirmar Pedido
+            <div class="border-b border-stone-800 pb-4">
+                <button onclick="toggleFaq(2)" class="w-full text-left font-bold text-sm uppercase tracking-wider flex justify-between">
+                    ¿Hacen envíos? <span id="faq-icon-2">+</span>
+                </button>
+                <div id="faq-2" class="faq-content text-stone-500 text-xs leading-relaxed">
+                    Sí, enviamos a todo Paraguay vía encomienda o delivery en Gran Asunción.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CARRITO -->
+    <div id="cart-bar" class="fixed bottom-0 left-0 right-0 bg-[#111] border-t border-stone-800 p-6 transform translate-y-full transition-all duration-500 z-[100] rounded-t-[2rem]">
+        <div class="max-w-4xl mx-auto flex items-center justify-between">
+            <div>
+                <span id="cart-count" class="text-[9px] font-black gold-text uppercase block mb-1">0 SELECCIONADOS</span>
+                <span id="cart-total" class="text-2xl font-serif font-bold text-white">Gs. 0</span>
+            </div>
+            <button onclick="sendBulkWa()" class="btn-wa text-white px-8 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest active:scale-95">
+                Pedir por WhatsApp
             </button>
         </div>
     </div>
 
     <script>
+        const COSTO_FEROMONAS = 20000;
+
         const perfumes = [
             {
                 id: 1,
                 nombre: "Sillage No. 5",
                 inspiracion: "Chanel No. 5",
                 familia: "Floral Aldehídico",
-                precios: { "50ml": 85000, "100ml": 150000 },
+                precios: { "50ml": 85000, "100ml": 155000 },
+                oferta: true,
                 cat: "Damas",
                 img: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=600",
-                descripcion: "Un ícono eterno de sofisticación. Notas de aldehídos y neroli sobre jazmín y rosa de Grasse."
+                descripcion: "Elegancia atemporal con notas de Jazmín."
             },
             {
                 id: 2,
                 nombre: "Sillage Salvaje",
                 inspiracion: "Sauvage de Dior",
                 familia: "Fougère Aromática",
-                precios: { "50ml": 95000, "100ml": 170000 },
+                precios: { "50ml": 95000, "100ml": 175000 },
+                oferta: false,
                 cat: "Caballeros",
                 img: "https://images.unsplash.com/photo-1594035910387-fea47794261f?w=600",
-                descripcion: "Frescura extrema y nobleza. Bergamota de Calabria con una estela poderosamente amaderada."
-            },
-            {
-                id: 3,
-                nombre: "Sillage Imperial",
-                inspiracion: "1 Million de Paco Rabanne",
-                familia: "Amaderada Especiada",
-                precios: { "50ml": 90000, "100ml": 160000 },
-                cat: "Caballeros",
-                img: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=600",
-                descripcion: "El aroma del éxito. Mandarina, canela intensa y cuero rubio. Un perfume magnético."
+                descripcion: "Frescura poderosa y amaderada."
             }
         ];
 
-        let selected = {}; 
+        let selected = {};
         let currentFilter = 'Todos';
 
         function formatGs(n) { return "Gs. " + n.toLocaleString('es-PY'); }
 
-        function toggleDetails(id, event) {
-            event.stopPropagation();
-            document.getElementById(`desc-${id}`).classList.toggle('details-active');
-        }
-
-        function selectProduct(id, size) {
-            const key = `${id}_${size}`;
-            if (selected[key]) delete selected[key];
-            else selected[key] = { id, size, qty: 1 };
+        function selectItem(id, size, fero) {
+            const key = `${id}_${size}_${fero}`;
+            if (selected[key]) {
+                delete selected[key];
+            } else {
+                selected[key] = { id, size, fero, qty: 1 };
+            }
             updateUI();
         }
 
-        function adjustQty(key, delta, event) {
-            event.stopPropagation();
+        function updateQty(key, delta, e) {
+            e.stopPropagation();
             if (!selected[key]) return;
             selected[key].qty = Math.max(1, selected[key].qty + delta);
             updateUI();
@@ -139,84 +156,62 @@
 
         function updateUI() {
             render();
-            const bar = document.getElementById('cart-bar');
             const keys = Object.keys(selected);
+            const bar = document.getElementById('cart-bar');
             if (keys.length > 0) {
                 bar.classList.remove('translate-y-full');
                 let total = 0; let count = 0;
-                keys.forEach(key => {
-                    const item = selected[key];
+                keys.forEach(k => {
+                    const item = selected[k];
                     const p = perfumes.find(p => p.id === item.id);
-                    total += p.precios[item.size] * item.qty;
+                    const unitPrice = item.fero ? p.precios[item.size] + COSTO_FEROMONAS : p.precios[item.size];
+                    total += unitPrice * item.qty;
                     count += item.qty;
                 });
-                document.getElementById('cart-count').innerText = `${count} FRASCOS SELECCIONADOS`;
+                document.getElementById('cart-count').innerText = `${count} PRODUCTOS`;
                 document.getElementById('cart-total').innerText = formatGs(total);
-            } else { bar.classList.add('translate-y-full'); }
+            } else {
+                bar.classList.add('translate-y-full');
+            }
         }
 
         function render() {
             const container = document.getElementById('catalog');
             container.innerHTML = '';
-            const filtered = perfumes.filter(p => currentFilter === 'Todos' || p.cat === currentFilter);
-            
-            filtered.forEach(p => {
-                const isSelected50 = !!selected[`${p.id}_50ml`];
-                const isSelected100 = !!selected[`${p.id}_100ml`];
-                const hasAny = isSelected50 || isSelected100;
+            const list = perfumes.filter(p => currentFilter === 'Todos' || p.cat === currentFilter);
 
+            list.forEach(p => {
+                const isSelected = Object.keys(selected).some(k => k.startsWith(`${p.id}_`));
+                
                 container.innerHTML += `
-                    <div class="card-premium rounded-[2.5rem] overflow-hidden group ${hasAny ? 'selected-card scale-[1.01]' : ''}">
-                        <div class="flex flex-col sm:flex-row">
-                            <!-- IMAGEN -->
-                            <div class="w-full sm:w-64 h-72 sm:h-auto bg-[#111] relative overflow-hidden flex-shrink-0">
-                                <img src="${p.img}" class="w-full h-full object-cover opacity-80 transition-all duration-700 group-hover:scale-110 group-hover:opacity-100">
-                                <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-transparent"></div>
+                    <div class="card-premium rounded-3xl overflow-hidden ${isSelected ? 'selected-card' : ''}">
+                        ${p.oferta ? `<div class="badge-oferta">OFERTA</div>` : ''}
+                        <div class="flex flex-col md:flex-row">
+                            <div class="md:w-56 h-64 md:h-auto bg-stone-900">
+                                <img src="${p.img}" class="w-full h-full object-cover opacity-70">
                             </div>
-                            
-                            <!-- CONTENIDO -->
-                            <div class="p-8 flex-grow flex flex-col justify-between">
-                                <div>
-                                    <div class="flex justify-between items-center mb-1">
-                                        <span class="text-[9px] font-black gold-text uppercase tracking-[0.3em]">${p.familia}</span>
+                            <div class="p-6 flex-grow">
+                                <span class="text-[9px] gold-text font-black uppercase tracking-widest">${p.familia}</span>
+                                <h3 class="text-2xl font-serif font-bold text-white">${p.nombre}</h3>
+                                <p class="text-[10px] text-stone-500 italic mb-6">Inspirado en ${p.inspiracion}</p>
+                                
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                                    <!-- 50ML -->
+                                    <div class="space-y-2">
+                                        <p class="text-[9px] font-bold text-stone-600 uppercase">Versión 50ml</p>
+                                        ${renderButton(p, '50ml', false)}
+                                        ${renderButton(p, '50ml', true)}
                                     </div>
-                                    <h3 class="text-3xl font-serif font-bold text-white leading-tight mb-2">${p.nombre}</h3>
-                                    <p class="text-[11px] text-stone-500 font-medium italic mb-8">Inspirado en: <span class="text-stone-300">${p.inspiracion}</span></p>
-                                    
-                                    <!-- SELECTORES -->
-                                    <div class="flex flex-wrap gap-4 mb-8">
-                                        <div class="flex flex-col gap-2">
-                                            <button onclick="selectProduct(${p.id}, '50ml')" class="size-btn px-5 py-2.5 rounded-xl text-[10px] font-black tracking-widest ${isSelected50 ? 'active shadow-[0_0_15px_rgba(212,175,55,0.3)]' : ''}">50ML - ${formatGs(p.precios['50ml'])}</button>
-                                            ${isSelected50 ? `
-                                                <div class="flex items-center justify-between px-3 py-1 bg-[#222] rounded-lg border border-stone-800">
-                                                    <button onclick="adjustQty('${p.id}_50ml', -1, event)" class="text-stone-500 hover:text-white">-</button>
-                                                    <span class="text-[10px] font-bold text-white">${selected[`${p.id}_50ml`].qty}</span>
-                                                    <button onclick="adjustQty('${p.id}_50ml', 1, event)" class="text-stone-500 hover:text-white">+</button>
-                                                </div>
-                                            ` : ''}
-                                        </div>
-                                        <div class="flex flex-col gap-2">
-                                            <button onclick="selectProduct(${p.id}, '100ml')" class="size-btn px-5 py-2.5 rounded-xl text-[10px] font-black tracking-widest ${isSelected100 ? 'active shadow-[0_0_15px_rgba(212,175,55,0.3)]' : ''}">100ML - ${formatGs(p.precios['100ml'])}</button>
-                                            ${isSelected100 ? `
-                                                <div class="flex items-center justify-between px-3 py-1 bg-[#222] rounded-lg border border-stone-800">
-                                                    <button onclick="adjustQty('${p.id}_100ml', -1, event)" class="text-stone-500 hover:text-white">-</button>
-                                                    <span class="text-[10px] font-bold text-white">${selected[`${p.id}_100ml`].qty}</span>
-                                                    <button onclick="adjustQty('${p.id}_100ml', 1, event)" class="text-stone-500 hover:text-white">+</button>
-                                                </div>
-                                            ` : ''}
-                                        </div>
+                                    <!-- 100ML -->
+                                    <div class="space-y-2">
+                                        <p class="text-[9px] font-bold text-stone-600 uppercase">Versión 100ml</p>
+                                        ${renderButton(p, '100ml', false)}
+                                        ${renderButton(p, '100ml', true)}
                                     </div>
                                 </div>
-
-                                <button onclick="toggleDetails(${p.id}, event)" class="text-[9px] font-black text-stone-600 uppercase tracking-widest flex items-center gap-2 hover:text-white transition-all">
-                                    Explorar esencia ↓
-                                </button>
-                            </div>
-                        </div>
-
-                        <div id="desc-${p.id}" class="details-content bg-[#0d0d0d] px-8 border-t border-stone-900">
-                            <div class="py-4">
-                                <p class="text-[13px] text-stone-500 leading-relaxed italic border-l border-stone-800 pl-4">"${p.descripcion}"</p>
+                                
+                                <button onclick="toggleDetails(${p.id})" class="text-[9px] font-bold text-stone-600 uppercase tracking-widest hover:text-white transition-all">Ver Notas ↓</button>
+                                <div id="desc-${p.id}" class="details-content text-xs text-stone-500 italic">"${p.descripcion}"</div>
                             </div>
                         </div>
                     </div>
@@ -224,27 +219,61 @@
             });
         }
 
-        function filter(cat) {
-            currentFilter = cat;
-            document.querySelectorAll('.cat-btn').forEach(btn => {
-                btn.className = "cat-btn px-6 py-2 rounded-full text-[9px] font-black tracking-widest border border-stone-800 text-stone-500 transition-all";
-                if(btn.id === `filter-${cat}`) btn.className = "cat-btn px-6 py-2 rounded-full text-[9px] font-black tracking-widest bg-white text-black transition-all";
-            });
+        function renderButton(p, size, fero) {
+            const key = `${p.id}_${size}_${fero}`;
+            const active = !!selected[key];
+            const price = fero ? p.precios[size] + COSTO_FEROMONAS : p.precios[size];
+            
+            return `
+                <div class="flex flex-col gap-1">
+                    <button onclick="selectItem(${p.id}, '${size}', ${fero})" class="btn-option p-3 rounded-xl ${active ? 'active' : ''}">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[10px] font-bold ${active ? 'text-white' : 'text-stone-400'}">
+                                ${fero ? '+ Feromonas' : 'Estándar'}
+                            </span>
+                            <span class="text-[10px] font-bold ${fero ? 'gold-text' : 'text-stone-300'}">${formatGs(price)}</span>
+                        </div>
+                    </button>
+                    ${active ? `
+                        <div class="flex items-center justify-between px-3 py-1 bg-stone-800 rounded-lg mx-2">
+                            <button onclick="updateQty('${key}', -1, event)" class="text-white font-bold">-</button>
+                            <span class="text-[10px] text-white font-bold">${selected[key].qty}</span>
+                            <button onclick="updateQty('${key}', 1, event)" class="text-white font-bold">+</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        function filter(c) {
+            currentFilter = c;
             render();
+            document.querySelectorAll('header button').forEach(b => {
+                b.className = "px-5 py-2 rounded-full text-[9px] font-black border border-stone-800 text-stone-500 transition-all";
+            });
+            document.getElementById(`filter-${c}`).className = "px-5 py-2 rounded-full text-[9px] font-black bg-white text-black transition-all";
+        }
+
+        function toggleDetails(id) { document.getElementById(`desc-${id}`).classList.toggle('active-content'); }
+        
+        function toggleFaq(id) {
+            document.getElementById(`faq-${id}`).classList.toggle('active-content');
+            const icon = document.getElementById(`faq-icon-${id}`);
+            icon.innerText = icon.innerText === '+' ? '−' : '+';
         }
 
         function sendBulkWa() {
-            let message = "¡Hola Sillage! 🇵🇾 Me gustaría consultar disponibilidad de:\n\n";
+            let msg = "¡Hola Sillage! 🇵🇾 Consulta de stock:\n\n";
             let total = 0;
-            Object.keys(selected).forEach(key => {
-                const item = selected[key];
-                const p = perfumes.find(p => p.id === item.id);
-                const sub = p.precios[item.size] * item.qty;
-                message += `✨ ${item.qty}x ${p.nombre} [${item.size}] - ${formatGs(sub)}\n`;
-                total += sub;
+            Object.keys(selected).forEach(k => {
+                const i = selected[k];
+                const p = perfumes.find(x => x.id === i.id);
+                const price = i.fero ? p.precios[i.size] + COSTO_FEROMONAS : p.precios[i.size];
+                msg += `✨ ${i.qty}x ${p.nombre} [${i.size}] ${i.fero ? '(CON FEROMONAS)' : '(ESTÁNDAR)'} - ${formatGs(price * i.qty)}\n`;
+                total += price * i.qty;
             });
-            message += `\nTotal: ${formatGs(total)}\n\n¿Tienen stock? ¡Muchas gracias!`;
-            window.open(`https://wa.me/595981000000?text=${encodeURIComponent(message)}`, '_blank');
+            msg += `\nTotal: ${formatGs(total)}`;
+            window.open(`https://wa.me/595981000000?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
         render();

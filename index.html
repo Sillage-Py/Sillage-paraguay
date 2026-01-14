@@ -43,6 +43,7 @@
             z-index: 50;
         }
 
+        /* Clase para ocultar el header */
         .header-hidden { transform: translateY(-100%); }
         
         .card-premium { 
@@ -115,7 +116,7 @@
         }
 
         .btn-wa { background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); }
-        .content-wrapper { padding-top: 220px; }
+        .content-wrapper { padding-top: 240px; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
@@ -164,10 +165,8 @@
 
     <script>
         const PRECIO_FEROMONAS = 15000;
-
         // ==========================================
         // CONFIGURACIÓN: CAMBIA TU NÚMERO AQUÍ 
-        // Usa el formato: 5959XXXXXXXX (Sin el +)
         // ==========================================
         const MI_NUMERO = "595981000000"; 
 
@@ -193,6 +192,17 @@
                 enOferta: false,
                 descuento: 0,
                 img: "https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=800"
+            },
+            {
+                id: 3,
+                nombre: "Sillage Rojo",
+                inspiracion: "Baccarat Rouge 540",
+                familia: "Ámbar Floral",
+                precios: { "50ml": 110000, "100ml": 195000 },
+                cat: "Unisex",
+                enOferta: true,
+                descuento: 0.20,
+                img: "https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&q=80&w=800"
             }
         ];
 
@@ -201,18 +211,50 @@
         let searchQuery = '';
         let lastScrollY = window.scrollY;
 
-        perfumes.forEach(p => state[p.id] = { size: '50ml', fero: false, qty: 0 });
+        // Inicializar el estado de cantidad para cada perfume
+        perfumes.forEach(p => {
+            state[p.id] = { size: '50ml', fero: false, qty: 0 };
+        });
+
+        // Lógica para esconder el header al bajar
+        window.addEventListener("scroll", () => {
+            const header = document.getElementById("mainHeader");
+            if (window.scrollY > lastScrollY && window.scrollY > 100) {
+                header.classList.add("header-hidden");
+            } else {
+                header.classList.remove("header-hidden");
+            }
+            lastScrollY = window.scrollY;
+        });
 
         function formatGs(n) { return "Gs. " + Math.round(n).toLocaleString('es-PY'); }
         function getPrecioFinal(base, enOferta, descuento) { return enOferta ? base * (1 - descuento) : base; }
+        
         function setSize(id, size) { state[id].size = size; render(); updateCart(); }
         function toggleFero(id) { state[id].fero = !state[id].fero; render(); updateCart(); }
-        function add(id) { state[id].qty++; render(); updateCart(); }
-        function remove(id) { if (state[id].qty > 0) state[id].qty--; render(); updateCart(); }
-        function handleSearch() { searchQuery = document.getElementById('searchBar').value.toLowerCase(); render(); }
+        
+        function add(id) { 
+            state[id].qty++; 
+            render(); 
+            updateCart(); 
+        }
+        
+        function remove(id) { 
+            if (state[id].qty > 0) {
+                state[id].qty--; 
+                render(); 
+                updateCart(); 
+            }
+        }
+
+        function handleSearch() { 
+            searchQuery = document.getElementById('searchBar').value.toLowerCase(); 
+            render(); 
+        }
         
         function filter(c) {
-            currentFilter = c; render();
+            currentFilter = c; 
+            render();
             document.querySelectorAll('nav button').forEach(b => b.className = "flex-shrink-0 px-4 py-1.5 rounded-full text-[9px] font-black border border-stone-800 text-stone-500 transition-all uppercase");
             document.getElementById(`filter-${c}`).className = "flex-shrink-0 px-4 py-1.5 rounded-full text-[9px] font-black bg-white text-black transition-all uppercase";
         }
@@ -234,11 +276,14 @@
                 bar.classList.remove('translate-y-full');
                 document.getElementById('cart-total').innerText = formatGs(total);
                 document.getElementById('cart-count').innerText = `${count} Fragancias`;
-            } else bar.classList.add('translate-y-full');
+            } else {
+                bar.classList.add('translate-y-full');
+            }
         }
 
         function render() {
             const container = document.getElementById('catalog');
+            const noRes = document.getElementById('no-results');
             container.innerHTML = '';
             
             const list = perfumes.filter(p => {
@@ -246,6 +291,9 @@
                 const matchSearch = p.nombre.toLowerCase().includes(searchQuery) || p.inspiracion.toLowerCase().includes(searchQuery);
                 return matchCat && matchSearch;
             });
+
+            if (list.length === 0) noRes.classList.remove('hidden');
+            else noRes.classList.add('hidden');
 
             list.forEach(p => {
                 const s = state[p.id];
@@ -256,21 +304,59 @@
                 container.innerHTML += `
                     <article class="card-premium ${s.qty > 0 ? 'card-active' : ''}">
                         ${p.enOferta ? `<div class="sale-badge">Oferta -${p.descuento * 100}%</div>` : ''}
+                        
                         <div class="w-full aspect-square bg-stone-900 relative">
                             <img src="${p.img}" class="w-full h-full object-cover opacity-60">
+                            <div class="absolute top-4 left-4">
+                                <span class="bg-black/60 backdrop-blur-md text-stone-300 text-[7px] px-2 py-1 rounded-full border border-white/10 uppercase font-bold tracking-widest">${p.cat}</span>
+                            </div>
                         </div>
+
                         <div class="p-6">
-                            <h3 class="text-2xl font-serif font-bold text-white">${p.nombre}</h3>
-                            <div class="flex gap-2 mt-4">
-                                <button onclick="setSize(${p.id}, '50ml')" class="size-btn ${s.size === '50ml' ? 'active' : ''}">50ML</button>
-                                <button onclick="setSize(${p.id}, '100ml')" class="size-btn ${s.size === '100ml' ? 'active' : ''}">100ML</button>
+                            <div class="mb-2">
+                                <span class="text-[9px] gold-text font-black uppercase tracking-widest">${p.familia}</span>
+                                <h3 class="text-2xl font-serif font-bold text-white leading-tight">${p.nombre}</h3>
+                                <p class="text-[10px] text-stone-500 italic">Inspirado en ${p.inspiracion}</p>
                             </div>
-                            <div onclick="toggleFero(${p.id})" class="fero-box mt-4 ${s.fero ? 'active' : ''}">
-                                <p class="text-[10px] font-black uppercase text-stone-300">Potenciar con Feromonas</p>
-                            </div>
-                            <div class="mt-6 flex items-center justify-between">
-                                <p class="text-xl font-serif font-bold text-white">${formatGs(precioConTodo)}</p>
-                                <button onclick="add(${p.id})" class="bg-white text-black px-6 py-3 rounded-xl text-[9px] font-black uppercase">Agregar</button>
+                            
+                            <div class="space-y-4 mt-6">
+                                <div class="flex gap-2">
+                                    <button onclick="setSize(${p.id}, '50ml')" class="size-btn ${s.size === '50ml' ? 'active' : ''}">
+                                        50ML <div class="text-[8px] opacity-60 font-normal mt-0.5">${formatGs(p.precios['50ml'])}</div>
+                                    </button>
+                                    <button onclick="setSize(${p.id}, '100ml')" class="size-btn ${s.size === '100ml' ? 'active' : ''}">
+                                        100ML <div class="text-[8px] opacity-60 font-normal mt-0.5">${formatGs(p.precios['100ml'])}</div>
+                                    </button>
+                                </div>
+
+                                <div onclick="toggleFero(${p.id})" class="fero-box flex items-center justify-between ${s.fero ? 'active' : ''}">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-5 h-5 border-2 border-stone-700 rounded flex items-center justify-center ${s.fero ? 'bg-amber-500 border-amber-500' : ''}">
+                                            ${s.fero ? '<svg class="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"></path></svg>' : ''}
+                                        </div>
+                                        <p class="text-[10px] font-black uppercase tracking-wider ${s.fero ? 'gold-text' : 'text-stone-300'}">Potenciar con Feromonas (+${formatGs(PRECIO_FEROMONAS)})</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center justify-between pt-4 border-t border-stone-800">
+                                    <div>
+                                        ${p.enOferta ? `<p class="text-[9px] text-stone-600 line-through mb-[-4px]">${formatGs(precioOriginal + (s.fero ? PRECIO_FEROMONAS : 0))}</p>` : ''}
+                                        <p class="text-xl font-serif font-bold text-white">${formatGs(precioConTodo)}</p>
+                                    </div>
+                                    
+                                    <!-- AQUÍ SE CORRIGIÓ EL SELECTOR DE CANTIDAD -->
+                                    <div class="flex items-center gap-1">
+                                        ${s.qty === 0 ? `
+                                            <button onclick="add(${p.id})" class="bg-white text-black px-6 py-3 rounded-xl text-[9px] font-black uppercase tracking-widest active:scale-95 transition-all">Agregar</button>
+                                        ` : `
+                                            <div class="flex items-center gap-4 bg-stone-900 px-3 py-2 rounded-xl border border-stone-800">
+                                                <button onclick="remove(${p.id})" class="w-8 h-8 flex items-center justify-center text-white text-lg font-bold">-</button>
+                                                <span class="text-sm font-bold text-white w-4 text-center">${s.qty}</span>
+                                                <button onclick="add(${p.id})" class="w-8 h-8 flex items-center justify-center text-white text-lg font-bold">+</button>
+                                            </div>
+                                        `}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </article>
@@ -298,7 +384,7 @@
                     
                     msg += `${diamond} *${p.nombre.toUpperCase()}* (${s.size})\n`;
                     msg += `   Cant: ${s.qty} | ${s.fero ? fire + ' Con Feromonas' : sparkles + ' Estándar'}\n`;
-                    if(p.enOferta) msg += `   ${star} *PROMO ACTIVADA*\n`;
+                    if(p.enOferta) msg += `   ${star} *OFERTA ACTIVADA*\n`;
                     msg += `   Subtotal: ${formatGs(finalConFero * s.qty)}\n\n`;
                     total += finalConFero * s.qty;
                 }
@@ -306,7 +392,7 @@
             
             msg += `*Total Final: ${formatGs(total)}*`;
             const encodedMsg = encodeURIComponent(msg); 
-            window.open(`https://api.whatsapp.com/send?phone=${595972480368}&text=${encodedMsg}`, '_blank');
+            window.open(`https://api.whatsapp.com/send?phone=${MI_NUMERO}&text=${encodedMsg}`, '_blank');
         }
 
         window.onload = render;

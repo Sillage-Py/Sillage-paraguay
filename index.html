@@ -12,41 +12,57 @@
         .gold-text { color: #d4af37; }
         .glass-header { background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(15px); border-bottom: 1px solid #262626; }
         
-        .card-premium { background: #171717; border: 1px solid #262626; transition: all 0.3s ease; position: relative; }
-        .selected-card { border-color: #d4af37 !important; background: #1a1a1a; }
+        .card-premium { background: #171717; border: 1px solid #262626; transition: all 0.3s ease; position: relative; border-radius: 2rem; }
         
-        /* Botón de opción */
-        .btn-option { 
+        /* Estilo para los botones de tamaño */
+        .size-btn { 
             border: 1px solid #333; 
             background: #111; 
-            transition: all 0.2s ease; 
-            cursor: pointer;
-            width: 100%;
-            text-align: left;
+            padding: 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #888;
+            transition: all 0.2s ease;
         }
-        .btn-option:hover { border-color: #555; }
-        .btn-option.active { 
+        .size-btn.active { 
             border-color: #d4af37; 
             background: rgba(212, 175, 55, 0.1); 
+            color: #d4af37;
         }
 
-        .badge-oferta {
-            position: absolute;
-            top: 15px;
-            right: -5px;
-            background: #d4af37;
-            color: #000;
-            padding: 4px 12px;
-            font-size: 10px;
-            font-weight: 900;
-            z-index: 10;
-            border-radius: 2px;
+        /* Cuadro de Feromonas */
+        .fero-box {
+            border: 1px dashed #444;
+            background: rgba(255, 255, 255, 0.02);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .fero-box.active {
+            border: 1px solid #d4af37;
+            background: rgba(212, 175, 55, 0.05);
         }
 
-        .details-content, .faq-content { max-height: 0; overflow: hidden; transition: all 0.4s ease; opacity: 0; }
+        .details-content { max-height: 0; overflow: hidden; transition: all 0.4s ease; opacity: 0; }
         .active-content { max-height: 500px; opacity: 1; padding-top: 1rem; }
         
         .btn-wa { background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); }
+        
+        /* Checkbox custom */
+        .custom-check {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #444;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .fero-box.active .custom-check {
+            background: #d4af37;
+            border-color: #d4af37;
+        }
     </style>
 </head>
 <body class="pb-40">
@@ -54,58 +70,35 @@
     <header class="glass-header sticky top-0 z-50">
         <div class="max-w-4xl mx-auto px-6 py-6 flex flex-col items-center text-center">
             <h1 class="text-4xl font-serif font-bold gold-text uppercase">SILLAGE</h1>
-            <p class="text-[8px] tracking-[0.4em] text-stone-500 font-bold mb-6">LUXURY INSPIRATION · PARAGUAY</p>
+            <p class="text-[8px] tracking-[0.4em] text-stone-500 font-bold mb-6 italic">Paraguay · Luxury Inspiration</p>
             
             <div class="flex gap-2">
-                <button onclick="filter('Todos')" id="filter-Todos" class="px-5 py-2 rounded-full text-[9px] font-black bg-white text-black transition-all">TODOS</button>
-                <button onclick="filter('Damas')" id="filter-Damas" class="px-5 py-2 rounded-full text-[9px] font-black border border-stone-800 text-stone-500 transition-all">DAMAS</button>
-                <button onclick="filter('Caballeros')" id="filter-Caballeros" class="px-5 py-2 rounded-full text-[9px] font-black border border-stone-800 text-stone-500 transition-all">CABALLEROS</button>
+                <button onclick="filter('Todos')" id="filter-Todos" class="px-5 py-2 rounded-full text-[10px] font-black bg-white text-black transition-all">TODOS</button>
+                <button onclick="filter('Damas')" id="filter-Damas" class="px-5 py-2 rounded-full text-[10px] font-black border border-stone-800 text-stone-500 transition-all">DAMAS</button>
+                <button onclick="filter('Caballeros')" id="filter-Caballeros" class="px-5 py-2 rounded-full text-[10px] font-black border border-stone-800 text-stone-500 transition-all">CABALLEROS</button>
             </div>
         </div>
     </header>
 
-    <main id="catalog" class="max-w-4xl mx-auto px-4 py-8 space-y-8">
-        <!-- Render dinámico -->
+    <main id="catalog" class="max-w-3xl mx-auto px-4 py-8 space-y-10">
+        <!-- Contenido dinámico -->
     </main>
 
-    <!-- FAQ -->
-    <section class="max-w-4xl mx-auto px-6 py-10 mb-20 border-t border-stone-900">
-        <h2 class="text-xl font-serif font-bold gold-text mb-6 text-center uppercase tracking-widest">Preguntas Frecuentes</h2>
-        <div class="space-y-4">
-            <div class="border-b border-stone-800 pb-4">
-                <button onclick="toggleFaq(1)" class="w-full text-left font-bold text-sm uppercase tracking-wider flex justify-between">
-                    ¿Qué son las feromonas? <span id="faq-icon-1">+</span>
-                </button>
-                <div id="faq-1" class="faq-content text-stone-500 text-xs leading-relaxed">
-                    Son concentrados que potencian el atractivo natural. Se mezclan con el perfume sin alterar su aroma original.
-                </div>
-            </div>
-            <div class="border-b border-stone-800 pb-4">
-                <button onclick="toggleFaq(2)" class="w-full text-left font-bold text-sm uppercase tracking-wider flex justify-between">
-                    ¿Hacen envíos? <span id="faq-icon-2">+</span>
-                </button>
-                <div id="faq-2" class="faq-content text-stone-500 text-xs leading-relaxed">
-                    Sí, enviamos a todo Paraguay vía encomienda o delivery en Gran Asunción.
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CARRITO -->
-    <div id="cart-bar" class="fixed bottom-0 left-0 right-0 bg-[#111] border-t border-stone-800 p-6 transform translate-y-full transition-all duration-500 z-[100] rounded-t-[2rem]">
-        <div class="max-w-4xl mx-auto flex items-center justify-between">
+    <!-- BARRA DE COMPRA -->
+    <div id="cart-bar" class="fixed bottom-0 left-0 right-0 bg-[#111] border-t border-stone-800 p-6 transform translate-y-full transition-all duration-500 z-[100] rounded-t-[2.5rem]">
+        <div class="max-w-3xl mx-auto flex items-center justify-between">
             <div>
-                <span id="cart-count" class="text-[9px] font-black gold-text uppercase block mb-1">0 SELECCIONADOS</span>
-                <span id="cart-total" class="text-2xl font-serif font-bold text-white">Gs. 0</span>
+                <span id="cart-count" class="text-[9px] font-black gold-text uppercase block mb-1">Tu selección</span>
+                <span id="cart-total" class="text-2xl font-serif font-bold text-white tracking-tighter text-3xl">Gs. 0</span>
             </div>
-            <button onclick="sendBulkWa()" class="btn-wa text-white px-8 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest active:scale-95">
-                Pedir por WhatsApp
+            <button onclick="sendBulkWa()" class="btn-wa text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest active:scale-95 shadow-lg">
+                Finalizar Pedido
             </button>
         </div>
     </div>
 
     <script>
-        const COSTO_FEROMONAS = 20000;
+        const ADITIVO_PRECIO = 20000;
 
         const perfumes = [
             {
@@ -114,10 +107,9 @@
                 inspiracion: "Chanel No. 5",
                 familia: "Floral Aldehídico",
                 precios: { "50ml": 85000, "100ml": 155000 },
-                oferta: true,
                 cat: "Damas",
-                img: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=600",
-                descripcion: "Elegancia atemporal con notas de Jazmín."
+                img: "https://images.unsplash.com/photo-1541643600914-78b084683601?w=800",
+                descripcion: "Un ícono de sofisticación absoluta con notas de jazmín y rosa de Grasse."
             },
             {
                 id: 2,
@@ -125,51 +117,60 @@
                 inspiracion: "Sauvage de Dior",
                 familia: "Fougère Aromática",
                 precios: { "50ml": 95000, "100ml": 175000 },
-                oferta: false,
                 cat: "Caballeros",
-                img: "https://images.unsplash.com/photo-1594035910387-fea47794261f?w=600",
-                descripcion: "Frescura poderosa y amaderada."
+                img: "https://images.unsplash.com/photo-1594035910387-fea47794261f?w=800",
+                descripcion: "Una composición poderosamente fresca, cruda y noble a la vez."
             }
         ];
 
-        let selected = {};
-        let currentFilter = 'Todos';
+        // Estado local del catálogo (qué tiene seleccionado cada producto)
+        // Estructura: { id_producto: { size: '50ml', fero: false, qty: 0 } }
+        let state = {};
+
+        // Inicializar estado
+        perfumes.forEach(p => {
+            state[p.id] = { size: '50ml', fero: false, qty: 0 };
+        });
 
         function formatGs(n) { return "Gs. " + n.toLocaleString('es-PY'); }
 
-        function selectItem(id, size, fero) {
-            const key = `${id}_${size}_${fero}`;
-            if (selected[key]) {
-                delete selected[key];
-            } else {
-                selected[key] = { id, size, fero, qty: 1 };
-            }
-            updateUI();
-        }
-
-        function updateQty(key, delta, e) {
-            e.stopPropagation();
-            if (!selected[key]) return;
-            selected[key].qty = Math.max(1, selected[key].qty + delta);
-            updateUI();
-        }
-
-        function updateUI() {
+        function setSize(id, size) {
+            state[id].size = size;
             render();
-            const keys = Object.keys(selected);
+            updateCartUI();
+        }
+
+        function toggleFero(id) {
+            state[id].fero = !state[id].fero;
+            render();
+            updateCartUI();
+        }
+
+        function changeQty(id, delta) {
+            state[id].qty = Math.max(0, state[id].qty + delta);
+            render();
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            let total = 0;
+            let count = 0;
+            Object.keys(state).forEach(id => {
+                const s = state[id];
+                if (s.qty > 0) {
+                    const p = perfumes.find(x => x.id == id);
+                    const base = p.precios[s.size];
+                    const final = s.fero ? base + ADITIVO_PRECIO : base;
+                    total += final * s.qty;
+                    count += s.qty;
+                }
+            });
+
             const bar = document.getElementById('cart-bar');
-            if (keys.length > 0) {
+            if (count > 0) {
                 bar.classList.remove('translate-y-full');
-                let total = 0; let count = 0;
-                keys.forEach(k => {
-                    const item = selected[k];
-                    const p = perfumes.find(p => p.id === item.id);
-                    const unitPrice = item.fero ? p.precios[item.size] + COSTO_FEROMONAS : p.precios[item.size];
-                    total += unitPrice * item.qty;
-                    count += item.qty;
-                });
-                document.getElementById('cart-count').innerText = `${count} PRODUCTOS`;
                 document.getElementById('cart-total').innerText = formatGs(total);
+                document.getElementById('cart-count').innerText = `${count} FRASCOS SELECCIONADOS`;
             } else {
                 bar.classList.add('translate-y-full');
             }
@@ -178,40 +179,74 @@
         function render() {
             const container = document.getElementById('catalog');
             container.innerHTML = '';
+            
             const list = perfumes.filter(p => currentFilter === 'Todos' || p.cat === currentFilter);
 
             list.forEach(p => {
-                const isSelected = Object.keys(selected).some(k => k.startsWith(`${p.id}_`));
-                
+                const s = state[p.id];
+                const precioActual = s.fero ? p.precios[s.size] + ADITIVO_PRECIO : p.precios[s.size];
+
                 container.innerHTML += `
-                    <div class="card-premium rounded-3xl overflow-hidden ${isSelected ? 'selected-card' : ''}">
-                        ${p.oferta ? `<div class="badge-oferta">OFERTA</div>` : ''}
+                    <div class="card-premium overflow-hidden group border ${s.qty > 0 ? 'border-stone-600' : 'border-stone-900'}">
                         <div class="flex flex-col md:flex-row">
-                            <div class="md:w-56 h-64 md:h-auto bg-stone-900">
-                                <img src="${p.img}" class="w-full h-full object-cover opacity-70">
+                            <!-- Imagen -->
+                            <div class="md:w-64 h-64 md:h-auto bg-stone-900 relative overflow-hidden">
+                                <img src="${p.img}" class="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700">
+                                <div class="absolute inset-0 bg-gradient-to-t from-[#171717] via-transparent to-transparent"></div>
                             </div>
-                            <div class="p-6 flex-grow">
-                                <span class="text-[9px] gold-text font-black uppercase tracking-widest">${p.familia}</span>
-                                <h3 class="text-2xl font-serif font-bold text-white">${p.nombre}</h3>
-                                <p class="text-[10px] text-stone-500 italic mb-6">Inspirado en ${p.inspiracion}</p>
+
+                            <!-- Contenido -->
+                            <div class="p-8 flex-grow">
+                                <span class="text-[10px] gold-text font-black uppercase tracking-widest">${p.familia}</span>
+                                <h3 class="text-3xl font-serif font-bold text-white mt-1">${p.nombre}</h3>
+                                <p class="text-[11px] text-stone-500 italic mb-6">Inspirado en ${p.inspiracion}</p>
                                 
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                                    <!-- 50ML -->
-                                    <div class="space-y-2">
-                                        <p class="text-[9px] font-bold text-stone-600 uppercase">Versión 50ml</p>
-                                        ${renderButton(p, '50ml', false)}
-                                        ${renderButton(p, '50ml', true)}
+                                <div class="space-y-6">
+                                    <!-- Selector de Tamaño -->
+                                    <div class="flex gap-3">
+                                        <button onclick="setSize(${p.id}, '50ml')" class="size-btn flex-1 ${s.size === '50ml' ? 'active' : ''}">
+                                            50ML
+                                            <div class="text-[9px] font-normal opacity-80 mt-1">${formatGs(p.precios['50ml'])}</div>
+                                        </button>
+                                        <button onclick="setSize(${p.id}, '100ml')" class="size-btn flex-1 ${s.size === '100ml' ? 'active' : ''}">
+                                            100ML
+                                            <div class="text-[9px] font-normal opacity-80 mt-1">${formatGs(p.precios['100ml'])}</div>
+                                        </button>
                                     </div>
-                                    <!-- 100ML -->
-                                    <div class="space-y-2">
-                                        <p class="text-[9px] font-bold text-stone-600 uppercase">Versión 100ml</p>
-                                        ${renderButton(p, '100ml', false)}
-                                        ${renderButton(p, '100ml', true)}
+
+                                    <!-- Cuadro de Feromonas Mejorado -->
+                                    <div onclick="toggleFero(${p.id})" class="fero-box p-4 rounded-2xl flex items-center justify-between ${s.fero ? 'active' : ''}">
+                                        <div class="flex items-center gap-4">
+                                            <div class="custom-check">
+                                                ${s.fero ? '<svg class="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"></path></svg>' : ''}
+                                            </div>
+                                            <div>
+                                                <p class="text-[11px] font-black uppercase tracking-wider ${s.fero ? 'gold-text' : 'text-stone-300'}">Potenciar con Feromonas</p>
+                                                <p class="text-[9px] text-stone-500">Aumenta tu magnetismo por +${formatGs(ADITIVO_PRECIO)}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Precio y Acción -->
+                                    <div class="flex items-center justify-between pt-4 border-t border-stone-800">
+                                        <div>
+                                            <p class="text-[9px] text-stone-500 uppercase font-bold tracking-widest">Total Fragancia</p>
+                                            <p class="text-xl font-serif font-bold text-white">${formatGs(precioActual)}</p>
+                                        </div>
+                                        
+                                        ${s.qty === 0 ? `
+                                            <button onclick="changeQty(${p.id}, 1)" class="bg-white text-black px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-stone-200 transition-colors">
+                                                Agregar
+                                            </button>
+                                        ` : `
+                                            <div class="flex items-center gap-4 bg-stone-900 p-2 rounded-xl border border-stone-800">
+                                                <button onclick="changeQty(${p.id}, -1)" class="w-8 h-8 flex items-center justify-center text-stone-400 hover:text-white font-bold">-</button>
+                                                <span class="text-xs font-bold text-white w-4 text-center">${s.qty}</span>
+                                                <button onclick="changeQty(${p.id}, 1)" class="w-8 h-8 flex items-center justify-center text-stone-400 hover:text-white font-bold">+</button>
+                                            </div>
+                                        `}
                                     </div>
                                 </div>
-                                
-                                <button onclick="toggleDetails(${p.id})" class="text-[9px] font-bold text-stone-600 uppercase tracking-widest hover:text-white transition-all">Ver Notas ↓</button>
-                                <div id="desc-${p.id}" class="details-content text-xs text-stone-500 italic">"${p.descripcion}"</div>
                             </div>
                         </div>
                     </div>
@@ -219,60 +254,34 @@
             });
         }
 
-        function renderButton(p, size, fero) {
-            const key = `${p.id}_${size}_${fero}`;
-            const active = !!selected[key];
-            const price = fero ? p.precios[size] + COSTO_FEROMONAS : p.precios[size];
-            
-            return `
-                <div class="flex flex-col gap-1">
-                    <button onclick="selectItem(${p.id}, '${size}', ${fero})" class="btn-option p-3 rounded-xl ${active ? 'active' : ''}">
-                        <div class="flex justify-between items-center">
-                            <span class="text-[10px] font-bold ${active ? 'text-white' : 'text-stone-400'}">
-                                ${fero ? '+ Feromonas' : 'Estándar'}
-                            </span>
-                            <span class="text-[10px] font-bold ${fero ? 'gold-text' : 'text-stone-300'}">${formatGs(price)}</span>
-                        </div>
-                    </button>
-                    ${active ? `
-                        <div class="flex items-center justify-between px-3 py-1 bg-stone-800 rounded-lg mx-2">
-                            <button onclick="updateQty('${key}', -1, event)" class="text-white font-bold">-</button>
-                            <span class="text-[10px] text-white font-bold">${selected[key].qty}</span>
-                            <button onclick="updateQty('${key}', 1, event)" class="text-white font-bold">+</button>
-                        </div>
-                    ` : ''}
-                </div>
-            `;
-        }
-
+        let currentFilter = 'Todos';
         function filter(c) {
             currentFilter = c;
             render();
             document.querySelectorAll('header button').forEach(b => {
-                b.className = "px-5 py-2 rounded-full text-[9px] font-black border border-stone-800 text-stone-500 transition-all";
+                b.className = "px-5 py-2 rounded-full text-[10px] font-black border border-stone-800 text-stone-500 transition-all";
             });
-            document.getElementById(`filter-${c}`).className = "px-5 py-2 rounded-full text-[9px] font-black bg-white text-black transition-all";
-        }
-
-        function toggleDetails(id) { document.getElementById(`desc-${id}`).classList.toggle('active-content'); }
-        
-        function toggleFaq(id) {
-            document.getElementById(`faq-${id}`).classList.toggle('active-content');
-            const icon = document.getElementById(`faq-icon-${id}`);
-            icon.innerText = icon.innerText === '+' ? '−' : '+';
+            document.getElementById(`filter-${c}`).className = "px-5 py-2 rounded-full text-[10px] font-black bg-white text-black transition-all";
         }
 
         function sendBulkWa() {
-            let msg = "¡Hola Sillage! 🇵🇾 Consulta de stock:\n\n";
+            let msg = "¡Hola Sillage! 🇵🇾 Quiero realizar un pedido:\n\n";
             let total = 0;
-            Object.keys(selected).forEach(k => {
-                const i = selected[k];
-                const p = perfumes.find(x => x.id === i.id);
-                const price = i.fero ? p.precios[i.size] + COSTO_FEROMONAS : p.precios[i.size];
-                msg += `✨ ${i.qty}x ${p.nombre} [${i.size}] ${i.fero ? '(CON FEROMONAS)' : '(ESTÁNDAR)'} - ${formatGs(price * i.qty)}\n`;
-                total += price * i.qty;
+            Object.keys(state).forEach(id => {
+                const s = state[id];
+                if (s.qty > 0) {
+                    const p = perfumes.find(x => x.id == id);
+                    const base = p.precios[s.size];
+                    const final = s.fero ? base + ADITIVO_PRECIO : base;
+                    const sub = final * s.qty;
+                    
+                    msg += `🔹 *${p.nombre}* (${s.size})\n`;
+                    msg += `   Cant: ${s.qty} | ${s.fero ? '🔥 Con Feromonas' : '✨ Estándar'}\n`;
+                    msg += `   Subtotal: ${formatGs(sub)}\n\n`;
+                    total += sub;
+                }
             });
-            msg += `\nTotal: ${formatGs(total)}`;
+            msg += `*Total del Pedido: ${formatGs(total)}*`;
             window.open(`https://wa.me/595981000000?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
